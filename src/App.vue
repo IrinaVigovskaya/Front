@@ -2,10 +2,16 @@
   <header>
     <nav>
       <div v-if="isAuthenticated && user">
-        Добро пожаловать, {{ user.name }}
+        Добро пожаловать, {{ user.username }}
         <button @click="logout">Выйти</button>
+        <ul>
+          <li><router-link to="/">Главная</router-link></li>
+          <li><router-link to="/tasks">Задачи</router-link></li>
+          <li><router-link to="/add">Добавить задачу</router-link></li>
+        </ul>
       </div>
       <div v-else>
+
         <form @submit.prevent="login">
           <div>
             <label for="username">Имя пользователя:</label>
@@ -21,10 +27,11 @@
       </div>
     </nav>
   </header>
+  <router-view></router-view>
 </template>
 
 <script>
-import { useAuthStore} from "./stores/authStore.js";
+import { useAuthStore } from "./stores/authStore.js";
 
 export default {
   data() {
@@ -46,11 +53,13 @@ export default {
     },
   },
   methods: {
-    logout() {
-      this.authStore.logout();
-    },
     login() {
       this.authStore.login({username: this.username, password: this.password});
+
+    },
+    logout() {
+      this.authStore.logout();
+
     },
   },
   mounted() {
@@ -62,9 +71,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.error {
-  color: red;
-}
-</style>
