@@ -1,39 +1,47 @@
 <template>
   <div>
-  <div>
-    <h2>Добавить  новую  задачу</h2>
-    <form @submit.prevent="createTask">
-      <div class="form-group">
-        <label for="task_name">Название  задачи:</label>
-        <input
-            type="text"
-            class="form-control"
-            id="task_name"
-            v-model="newTask.task_name"
-            required
-        />
-      </div>
-      <div class="form-group">
-        <label for="task_description">Описание:</label>
-        <textarea
-            class="form-control"
-            id="task_description"
-            v-model="newTask.task_description"
-        ></textarea>
-      </div>
-      <div class="form-group">
-        <label for="task_due_date">Срок  выполнения:</label>
-        <input
-            type="date"
-            class="form-control"
-            id="task_due_date"
-            v-model="newTask.task_due_date"
-            required
-        />
-      </div>
-      <button type="submit" class="btn btn-primary">Добавить  задачу</button>
-    </form>
-  </div>
+    <div v-if="isAuthenticated && user">
+      <h2 class="text-2xl font-bold mb-4">Добавить новую задачу</h2>
+      <form @submit.prevent="createTask" class="space-y-4">
+        <div>
+          <label for="task_name" class="block text-sm font-medium text-gray-700">
+            Название задачи:
+          </label>
+          <input
+              type="text"
+              id="task_name"
+              v-model="newTask.task_name"
+              required
+              class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+        <div>
+          <label for="task_description" class="block text-sm font-medium text-gray-700">
+            Описание:
+          </label>
+          <textarea
+              id="task_description"
+              v-model="newTask.task_description"
+              class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          ></textarea>
+        </div>
+        <div>
+          <label for="task_due_date" class="block text-sm font-medium text-gray-700">
+            Срок выполнения:
+          </label>
+          <input
+              type="date"
+              id="task_due_date"
+              v-model="newTask.task_due_date"
+              required
+              class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+        <button type="submit" class="inline-flex items-center px-4 py-3 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          Добавить задачу
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -89,7 +97,8 @@ export default {
     return {
       newTask,
       createTask,
-
+      isAuthenticated: computed(() => authStore.isAuthenticated),
+      user: computed(() => authStore.user)
     };
   },
 };

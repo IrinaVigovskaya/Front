@@ -1,44 +1,79 @@
 <template>
-  <header>
-    <nav>
+  <Menubar :model="items">
+    <template #start>
+      <span>
+        <img src="@/assets/logo.svg" width="70" alt="My SVG Icon"/>
+      </span>
+    </template>
+    <template #item="{ item, props, hasSubmenu, root }">
+      <a class="flex items-center ml-6 p-4">
+        <router-link v-if="item.route" :to="item.route">
+          <span :class="item.icon"/>
+          <span class="ml-1">{{ item.label }}</span>
+        </router-link>
+      </a>
+    </template>
+    <template #end>
+      <div class="flex items-center gap-2">
       <div v-if="isAuthenticated && user">
-        Добро пожаловать, {{ user.username }}
-        <button @click="logout">Выйти</button>
-        <ul>
-          <li><router-link to="/">Главная</router-link></li>
-          <li><router-link to="/tasks">Задачи</router-link></li>
-          <li><router-link to="/add">Добавить задачу</router-link></li>
-        </ul>
+        <span class="pi pi-fw pi-user mr-4"/> {{user.username}}
+        <button @click="logout" class="ml-2 inline-flex items-center px-4 py-3 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Выйти</button>
       </div>
       <div v-else>
 
         <form @submit.prevent="login">
-          <div>
-            <label for="username">Имя пользователя:</label>
-            <input v-model="username" type="text" id="username" required />
-          </div>
-          <div>
-            <label for="password">Пароль:</label>
-            <input v-model="password" type="password" id="password" required />
-          </div>
-          <button type="submit">Войти</button>
-          <p v-if="autError" class="error">{{ autError }}</p>
+
+          <InputText v-model="username" type="text" id="username" required placeholder="Имя пользователя" class="m-2 sm:w-auto"
+                     :class="{'p-invalid': autError}"/>
+          <InputText v-model="password" type="password" id="password" required placeholder="Пароль" class="m-2 sm:w-auto"
+                     :class="{'p-invalid': autError}"/>
+
+          <button type="submit" class="inline-flex items-center px-4 py-3 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          Войти</button>
+          <div class="ml-2"><small v-if="autError" class="error">{{ autError}}</small></div>
+
         </form>
       </div>
-    </nav>
-  </header>
+      </div>
+    </template>
+  </Menubar>
   <router-view></router-view>
 </template>
 
 <script>
 import { useAuthStore } from "./stores/authStore.js";
+import Button from "primevue/button";
+import Menubar from "primevue/menubar";
+import InputText from "primevue/inputtext";
 
 export default {
+  components: {Button, Menubar, InputText},
   data() {
     return {
       username: '',
       password: '',
       authStore: useAuthStore(),
+      items: [
+        {
+          label: 'Главная страница',
+          icon: 'pi pi-fw pi-home',
+          route: '/',
+          shortcut: 'Ctrl+H',
+          submenu: [
+
+          ],
+        },
+        {
+          label: 'Задачи',
+          icon: 'pi pi-fw pi-folder',
+          route: '/tasks',
+        },
+        {
+          label: "Добавить задачу",
+          icon: 'pi pi-fw pi-box',
+          route: '/add',
+        },
+      ],
     };
   },
   computed: {
