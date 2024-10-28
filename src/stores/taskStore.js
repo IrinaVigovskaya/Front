@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { useAuthStore } from './authStore.js';
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export const useTaskStore = defineStore('tasks', {
     state: () => ({
@@ -16,7 +17,7 @@ export const useTaskStore = defineStore('tasks', {
             this.errorMessage = '';
             const authStore = useAuthStore();
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/task', {
+                const response = await axios.get(backendUrl + '/task', {
                     headers: {
                         Authorization: 'Bearer ' + authStore.token,
                     },
