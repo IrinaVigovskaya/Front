@@ -2,56 +2,37 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 import { useAuthStore } from './authStore.js';
 
-
 export const useTaskStore = defineStore('tasks', {
     state: () => ({
         tasks: [],
         errorMessage: '',
+        currentPage: 1, // Текущая страница
+        totalRecords: 0, // Общее количество записей
+        loading: false, // Индикатор загрузки
     }),
     actions: {
-        async fetchTasks() {
-            const authStore = useAuthStore(); // Получаем доступ к хранилищу auth
+        async fetchTasks(page = 1, perPage) {
+            this.loading = true;
             this.errorMessage = '';
+            const authStore = useAuthStore();
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/task', {
                     headers: {
-                        Authorization: 'Bearer ' + authStore.token, // Используем authStore.token
-                    },
-                });
-                this.tasks = response.data;
-            } catch (error) {
-                if (error.response) {
-                    this.errorMessage = error.response.data.message;
-                    console.error(error);
-                } else if (error.request) {
-                    this.errorMessage = error.message;
-                    console.error(error);
-                } else {
-                    console.error(error);
-                }
-            }
-        },
-
-        async createTask(taskData, authStore) {
-            try {
-                const response = await axios.post('http://127.0.0.1:8000/api/new', taskData, {
-                    headers: {
                         Authorization: 'Bearer ' + authStore.token,
                     },
+                    params: { // Добавляем параметры для пагинации
+                        page: page,
+                        per_page: perPage,
+                    },
                 });
-                this.tasks.push(response.data); // Добавляем новую задачу в список
+                this.tasks = response.data.data; // Предполагаем, что API возвращает массив данных в свойстве 'data'
+                this.totalRecords = response.data.total; // Предполагаем, что API возвращает общее количество записей в свойстве 'total'
+                this.currentPage = page;
             } catch (error) {
-                if (error.response) {
-                    this.errorMessage = error.response.data.message;
-                    console.error(error);
-                } else if (error.request) {
-                    this.errorMessage = error.message;
-                    console.error(error);
-                } else {
-                    console.error(error);
-                }
+                // Обработка ошибок
+            } finally {
+                this.loading = false;
             }
         },
-
     },
 });
