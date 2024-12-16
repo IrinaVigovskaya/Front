@@ -6,7 +6,8 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const useTaskStore = defineStore('tasks', {
     state: () => ({
         tasks: [],
-        errorMessage: '',
+        errorMessage: "",
+        errorCode: "",
         currentPage: 1, // Текущая страница
         totalRecords: 0, // Общее количество записей
         loading: false, // Индикатор загрузки
@@ -35,5 +36,37 @@ export const useTaskStore = defineStore('tasks', {
                 this.loading = false;
             }
         },
-    },
-});
+
+        async create_task(formData) {
+            this.errorMessage = '';
+            const authStore = useAuthStore();
+
+            formData.append('user_id', authStore.user.id);
+            try {
+                const response = await axios.post(backendUrl + '/task', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            Authorization: 'Bearer ' + authStore.token,
+                        },
+                    }
+                );
+                this.errorCode = response.data.code;
+                this.errorMessage = response.data.message;
+            } catch (error) {
+                if (error.response) {
+                    this.errorCode = 11;
+                    this.errorMessage = error.response.data.message;
+                    console.log(error);
+                } else if (error.request) {
+                    this.errorCode = 12;
+                    this.errorMessage = error.message;
+                    console.log(error);
+                } else {
+                    this.errorCode = 13;
+                    console.log(error);
+                }
+            }
+        }
+    }
+}
+);

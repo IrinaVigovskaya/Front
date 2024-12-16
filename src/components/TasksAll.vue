@@ -16,6 +16,13 @@
     <Column field="task_name" header="Название" />
     <Column field="task_description" header="Описание" />
     <Column field="task_due_date" header="Дедлайн" />
+    <Column field="picture_url" header="Изображение">
+      <template #body="{data}">
+        <img v-if="data.picture_url" :src="data.picture_url" class="fixed-size-image"/>
+        <span v-else>Нет изображения</span>
+      </template>
+    </Column>
+    
   </DataTable>
 </template>
 
@@ -23,6 +30,7 @@
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { useTaskStore } from '../stores/taskStore.js';
+import Button from 'primevue/button';
 
 export default {
   name: "TasksAll",
@@ -45,3 +53,11 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.fixed-size-image {
+  width: 100px; /* Ширина изображения */
+  height: 100px; /* Высота изображения */
+  object-fit: cover; /*  Обрезка изображения, чтобы заполнить контейнер */
+}
+</style>
